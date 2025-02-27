@@ -16,6 +16,7 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
+import MoodLog from './pages/MoodLog';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,10 +45,19 @@ function App() {
           }
         />
         <Route
+          path="/moodLog"
+          element={
+            <>
+              <PageTitle title="Mood Log | MoodAura" />
+              <MoodLog />
+            </>
+          }
+        />
+        <Route
           path="/calendar"
           element={
             <>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Calendar | MoodAura" />
               <Calendar />
             </>
           }
@@ -56,7 +66,7 @@ function App() {
           path="/profile"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Profile | MoodAura" />
               <Profile />
             </>
           }
@@ -65,7 +75,7 @@ function App() {
           path="/forms/form-elements"
           element={
             <>
-              <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Form Elements | MoodAura" />
               <FormElements />
             </>
           }
@@ -74,7 +84,7 @@ function App() {
           path="/forms/form-layout"
           element={
             <>
-              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Form Layout | MoodAura" />
               <FormLayout />
             </>
           }
@@ -83,7 +93,7 @@ function App() {
           path="/tables"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tables | MoodAura" />
               <Tables />
             </>
           }
@@ -92,7 +102,7 @@ function App() {
           path="/settings"
           element={
             <>
-              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Settings | MoodAura" />
               <Settings />
             </>
           }
@@ -101,7 +111,7 @@ function App() {
           path="/chart"
           element={
             <>
-              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Basic Chart | MoodAura" />
               <Chart />
             </>
           }
@@ -110,7 +120,7 @@ function App() {
           path="/ui/alerts"
           element={
             <>
-              <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Alerts | MoodAura" />
               <Alerts />
             </>
           }
@@ -119,7 +129,7 @@ function App() {
           path="/ui/buttons"
           element={
             <>
-              <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Buttons | MoodAura" />
               <Buttons />
             </>
           }
@@ -128,7 +138,7 @@ function App() {
           path="/auth/signin"
           element={
             <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Signin | MoodAura" />
               <SignIn />
             </>
           }
@@ -137,7 +147,7 @@ function App() {
           path="/auth/signup"
           element={
             <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Signup | MoodAura" />
               <SignUp />
             </>
           }
