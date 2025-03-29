@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Outlet } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -11,6 +11,7 @@ import ECommerce from './pages/Dashboard/ECommerce';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
+import LandingPage from './pages/LandingPage';
 import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
@@ -33,10 +34,37 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <DefaultLayout>
-      <Routes>
+    <Routes>
+      <Route
+        index
+        element={
+          <>
+            <PageTitle title="Welcome to MoodAura" />
+            <LandingPage />
+          </>
+        }
+      />
+      <Route
+        path="/auth/signin"
+        element={
+          <>
+            <PageTitle title="Signin | MoodAura" />
+            <SignIn />
+          </>
+        }
+      />
+      <Route
+        path="/auth/signup"
+        element={
+          <>
+            <PageTitle title="Signup | MoodAura" />
+            <SignUp />
+          </>
+        }
+      />
+      <Route element={<DefaultLayout><Outlet /></DefaultLayout>}>
         <Route
-          index
+          path='/dashboard'
           element={
             <>
               <PageTitle title="MoodAura" />
@@ -134,26 +162,9 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/auth/signin"
-          element={
-            <>
-              <PageTitle title="Signin | MoodAura" />
-              <SignIn />
-            </>
-          }
-        />
-        <Route
-          path="/auth/signup"
-          element={
-            <>
-              <PageTitle title="Signup | MoodAura" />
-              <SignUp />
-            </>
-          }
-        />
-      </Routes>
-    </DefaultLayout>
+
+      </Route>
+    </Routes>
   );
 }
 
