@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation, Outlet } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate, Outlet } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -18,6 +18,11 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import MoodLog from './pages/MoodLog';
+
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/auth/signin" />;
+};
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,100 +71,122 @@ function App() {
         <Route
           path='/dashboard'
           element={
+          <ProtectedRoute>
             <>
               <PageTitle title="MoodAura" />
               <ECommerce />
             </>
+          </ProtectedRoute>
           }
         />
         <Route
           path="/moodLog"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Mood Log | MoodAura" />
               <MoodLog />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/calendar"
           element={
+            <ProtectedRoute>  
             <>
               <PageTitle title="Calendar | MoodAura" />
               <Calendar />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Profile | MoodAura" />
               <Profile />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/forms/form-elements"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Form Elements | MoodAura" />
               <FormElements />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/forms/form-layout"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Form Layout | MoodAura" />
               <FormLayout />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/tables"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Tables | MoodAura" />
               <Tables />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/settings"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Settings | MoodAura" />
               <Settings />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/chart"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Basic Chart | MoodAura" />
               <Chart />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/ui/alerts"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Alerts | MoodAura" />
               <Alerts />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/ui/buttons"
           element={
+            <ProtectedRoute>
             <>
               <PageTitle title="Buttons | MoodAura" />
               <Buttons />
             </>
+            </ProtectedRoute>
           }
         />
 

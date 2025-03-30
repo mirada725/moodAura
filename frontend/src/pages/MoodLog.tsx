@@ -13,50 +13,106 @@ const moodLog = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [note, setNote] = useState("");
   const [entries, setEntries] = useState<{ id: number; date: string; mood: number; note: string; }[]>([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const storedEntries = JSON.parse(localStorage.getItem("moodEntries") || "[]");
-    setEntries(storedEntries);
+    fetchEntries();
   }, []);
+
+  const fetchEntries = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/mood/entries', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch entries');
+      const data = await response.json();
+      setEntries(data);
+    } catch (err) {
+      setError('Failed to load mood entries.');
+    }
+  };
+  //   const storedEntries = JSON.parse(localStorage.getItem("moodEntries") || "[]");
+  //   setEntries(storedEntries);
+  // }, []);
 
   const selectMood = (mood: number) => {
     setSelectedMood(mood);
   };
 
-  const addEntry = () => {
+  const addEntry = async () => {
     if (!date) {
       alert("Please select a date");
       return;
     }
 
-    const newEntry = {
-      id: Date.now(),
-      date,
-      mood: selectedMood,
-      note,
-    };
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/mood/entries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ date, mood: selectedMood, note }),
+      });
 
-    const updatedEntries = [newEntry, ...entries];
-    setEntries(updatedEntries);
-    localStorage.setItem("moodEntries", JSON.stringify(updatedEntries));
-
-    // Reset form
-    setDate(new Date().toISOString().split("T")[0]);
-    setNote("");
-    setSelectedMood(3);
+      if (!response.ok) throw new Error('Failed to add entry');
+      const newEntry = await response.json();
+      setEntries([newEntry, ...entries]);
+      setDate(new Date().toISOString().split('T')[0]);
+      setNote('');
+      setSelectedMood(3);
+    } catch (err) {
+      setError('Failed to save mood entry.');
+    }
   };
 
-  const deleteEntry = (id: number) => {
-    const updatedEntries = entries.filter((entry) => entry.id !== id);
-    setEntries(updatedEntries);
-    localStorage.setItem("moodEntries", JSON.stringify(updatedEntries));
+    //   const newEntry = {
+    //   id: Date.now(),
+    //   date,
+    //   mood: selectedMood,
+    //   note,
+    // };
+
+  //   const updatedEntries = [newEntry, ...entries];
+  //   setEntries(updatedEntries);
+  //   localStorage.setItem("moodEntries", JSON.stringify(updatedEntries));
+
+  //   // Reset form
+  //   setDate(new Date().toISOString().split("T")[0]);
+  //   setNote("");
+  //   setSelectedMood(3);
+  // };
+
+  const deleteEntry = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/api/mood/entries/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete entry');
+      setEntries(entries.filter((entry) => entry.id !== id));
+    } catch (err) {
+      setError('Failed to delete mood entry.');
+    }
   };
+  //   const updatedEntries = entries.filter((entry) => entry.id !== id);
+  //   setEntries(updatedEntries);
+  //   localStorage.setItem("moodEntries", JSON.stringify(updatedEntries));
+  // };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-3xl font-bold text-center text-purple-600 mb-8 mt-4">
         Daily Mood Tracker
       </h1>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
         <div className="space-y-4">

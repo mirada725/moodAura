@@ -5,7 +5,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
       <div className="text-center text-white">
-        <h1 className="text-5xl font-bold mb-6">Welcome to Your Dashboard</h1>
+        <h1 className="text-5xl font-bold mb-6">Welcome to Your MoodAura</h1>
         <p className="text-lg mb-8">Manage your data with ease and efficiency.</p>
         <div className="flex justify-center gap-6">
           <Link
