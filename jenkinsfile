@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/mirada725/moodAura.git', branch: 'main'
+            }
+        }
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh 'mvn clean package'
+                    script {
+                        backendImage = docker.build("chathzaa/moodaura-backend:${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    script {
+                        frontendImage = docker.build("yourusername/moodaura-frontend:${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+        stage('Test Backend') { // Optional
+            steps {
+                dir('backend') {
+                    sh 'mvn test'
+                }
+            }
+        }
+        stage('Test Frontend') { // Optional
+            steps {
+                dir('frontend') {
+                    sh 'npm install && npm test'
+                }
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
+                        backendImage.push()
+                        backendImage.push('latest')
+                        frontendImage.push()
+                        frontendImage.push('latest')
+                    }
+                }
+            }
+        }
+        stage('Deploy to AWS') {
+            steps {
+                sh 'terraform init'
+                sh 'terraform apply -auto-approve'
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'hosts.ini'
+                )
+            }
+        }
+    }
+}
