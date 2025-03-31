@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 
+import angry from "../images/moods/angry.png";
+import happy from "../images/moods/happy.png";
+import calm from "../images/moods/calm.png";
+import sad from "../images/moods/sad.png";
+import excited from "../images/moods/excited.png";
+
 const moodImages: { [key: number]: string } = {
-  5: "/src/images/moods/angry.png",
-  4: "/src/images/moods/happy.png",
-  3: "/src/images/moods/calm.png",
-  2: "/src/images/moods/sad.png",
-  1: "/src/images/moods/excited.png",
+  5: angry,
+  4: happy,
+  3: calm,
+  2: sad,
+  1: excited,
 };
 
 const moodLog = () => {
