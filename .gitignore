@@ -1,0 +1,11 @@
+# Root-level ignores
+.env
+.vscode/
+.DS_Store
+
+# IDE files in root
+.idea/
+*.iml
+
+# Logs in root
+*.log
