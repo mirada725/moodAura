@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/moodaura
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Chathumi,123
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DockerFile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=moodaura
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Chathumi,123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

@@ -1,0 +1,26 @@
+# Build artifacts
+/target/
+/*.jar
+/*.war
+
+# IDE files
+/.idea/
+/*.iml
+/.vscode/
+
+# Logs
+*.log
+
+# Dependency directories
+dependency-maven-plugin-markers/
+
+# Environment files
+.env
+
+# Maven wrapper (if used)
+/.mvn/
+mvnw
+mvnw.cmd
+
+# Local configuration overrides
+application-*.properties
