@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    
+    environment {
+        // Define Docker Hub registry URL (optional, for clarity)
+        DOCKER_REGISTRY = 'https://registry.hub.docker.com'
+        DOCKER_CREDENTIALS_ID = 'dockerhub' // Jenkins credential ID for Docker Hub
+    }
+    
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout the code from GitHub
+                git url: 'https://github.com/mirada725/moodAura.git', branch: 'main'
+            }
+        }
+        
+        stage('Build and Push Frontend') {
+            steps {
+                // Build and push the frontend Docker image
+                script {
+                    def frontendImage = docker.build("chathzaa/devopsproject-frontend:latest", "./frontend")
+                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                        frontendImage.push()
+                    }
+                }
+            }
+        }
+        
+        stage('Build and Push Backend') {
+            steps {
+                // Build and push the backend Docker image
+                script {
+                    def backendImage = docker.build("chathzaa/devopsproject-backend:latest", "./backend")
+                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                        backendImage.push()
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Clean up Docker images to free space (optional)
+            sh 'docker system prune -f'
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs for details.'
+        }
+    }
+}
