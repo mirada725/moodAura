@@ -8,10 +8,12 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/moodaura
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=Chathumi,123
+      - SPRING_DATASOURCE_PASSWORD=mirada
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - db
+    env_file:
+    - .env
   frontend:
     build:
       context: ./frontend
@@ -25,10 +27,25 @@ services:
     environment:
       - POSTGRES_DB=moodaura
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=Chathumi,123
+      - POSTGRES_PASSWORD="mirada"
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    restart: unless-stopped
+    privileged: true
+    user: root
+    ports:
+      - "8082:8080"  # Jenkins UI
+      - "50000:50000" # Agent Port
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # Allow Jenkins to use Docker
+    environment:
+      - JENKINS_OPTS="--prefix=/jenkins"
 volumes:
   pgdata:
+  jenkins_home:
