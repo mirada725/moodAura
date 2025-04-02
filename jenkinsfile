@@ -10,9 +10,11 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+retry(3){
                 // Checkout the code from GitHub
-                git url: 'https://github.com/mirada725/moodAura.git', branch: 'main'
+               git branch: 'main',  url: 'https://github.com/mirada725/moodAura.git'
             }
+}
         }
         
         stage('Build and Push Frontend') {
