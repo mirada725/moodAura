@@ -1,22 +1,54 @@
-# main.tf
 provider "aws" {
-  region = "eu-north-1"  # Stockholm region
+  region = "eu-north-1" # Change to your preferred region
 }
 
-# Security Group for MoodAura App
-resource "aws_security_group" "moodaura_sg" {
-  name        = "moodaura-sec-group"
-  description = "Allow SSH and application ports"
+resource "aws_instance" "mern_app_server" {
+  ami           = "ami-0323c940050bcdb62" # Amazon Linux 2 AMI (update as needed)
+  instance_type = "t3.micro"             # Adjust based on your needs
+  key_name      = "moodAura-jenkins"    # Replace with your EC2 key pair name
 
-  # SSH Access (Restrict to your IP)
+  vpc_security_group_ids = [aws_security_group.mern_sg.id]
+
+  tags = {
+    Name = "MoodAura-Server"
+  }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              yum install -y docker
+              systemctl start docker
+              systemctl enable docker
+              usermod -aG docker ec2-user
+              EOF
+}
+
+resource "aws_security_group" "mern_sg" {
+  name        = "elevateDaily-security-group"
+  description = "Allow SSH, HTTP, HTTPS, and custom ports for MERN app"
+
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["YOUR_IP/32"]  # Replace with your IP e.g., "123.45.67.89/32"
+    cidr_blocks = ["0.0.0.0/0"] # Restrict this to your IP in production
   }
 
-  # MoodAura Client Port
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Add ports for your MERN app (e.g., 3000 for client, 5000 for backend)
   ingress {
     from_port   = 3000
     to_port     = 3000
@@ -24,7 +56,6 @@ resource "aws_security_group" "moodaura_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # MoodAura Backend Port
   ingress {
     from_port   = 5000
     to_port     = 5000
@@ -32,7 +63,6 @@ resource "aws_security_group" "moodaura_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
@@ -41,31 +71,6 @@ resource "aws_security_group" "moodaura_sg" {
   }
 }
 
-# EC2 Instance for MoodAura App
-resource "aws_instance" "moodaura_server" {
-  ami           = "ami-0323c940050bcdb62"  # Amazon Linux 2 in eu-north-1
-  instance_type = "t3.micro"
-  key_name      = "test-key"               # Must match your AWS key pair name
-  vpc_security_group_ids = [aws_security_group.moodaura_sg.id]
-
-  # Install Docker and Docker Compose on startup
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              amazon-linux-extras install docker -y
-              systemctl start docker
-              systemctl enable docker
-              usermod -aG docker ec2-user
-              curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-              chmod +x /usr/local/bin/docker-compose
-              EOF
-
-  tags = {
-    Name = "MoodAura-App-Server"
-  }
-}
-
-# Output EC2 Public IP for Jenkins Pipeline
 output "instance_public_ip" {
-  value = aws_instance.moodaura_server.public_ip
+  value = aws_instance.mern_app_server.public_ip
 }
