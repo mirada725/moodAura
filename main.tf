@@ -12,13 +12,17 @@ resource "aws_instance" "app_server" {
     Name = "AppServer"
   }
   
-  user_data = <<-EOF
+user_data = <<-EOF
               #!/bin/bash
               yum update -y
-              yum install -y docker
+              amazon-linux-extras install docker -y  # Use Amazon Linux extras for Docker
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ec2-user
+
+              # Install Docker Compose
+              curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
               EOF
 }
 
