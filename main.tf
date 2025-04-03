@@ -2,17 +2,16 @@ provider "aws" {
   region = "eu-north-1" # Change to your preferred region
 }
 
-resource "aws_instance" "mern_app_server" {
+resource "aws_instance" "app_server" {
   ami           = "ami-0323c940050bcdb62" # Amazon Linux 2 AMI (update as needed)
-  instance_type = "t3.micro"             # Adjust based on your needs
-  key_name      = "moodAura-jenkins"    # Replace with your EC2 key pair name
-
-  vpc_security_group_ids = [aws_security_group.mern_sg.id]
-
+  instance_type = "t3.micro"              # Adjust based on your needs
+  key_name      = "moodAura-jenkins"      # Replace with your EC2 key pair name
+  vpc_security_group_ids = [aws_security_group.app_sg.id]
+  
   tags = {
-    Name = "MoodAura-Server"
+    Name = "AppServer"
   }
-
+  
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
@@ -23,17 +22,11 @@ resource "aws_instance" "mern_app_server" {
               EOF
 }
 
-resource "aws_security_group" "mern_sg" {
-  name        = "elevateDaily-security-group"
-  description = "Allow SSH, HTTP, HTTPS, and custom ports for MERN app"
+resource "aws_security_group" "app_sg" {
+  name        = "app-security-group"
+  description = "Allow web traffic access"
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Restrict this to your IP in production
-  }
-
+  # HTTP access from anywhere
   ingress {
     from_port   = 80
     to_port     = 80
@@ -41,6 +34,7 @@ resource "aws_security_group" "mern_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTPS access from anywhere
   ingress {
     from_port   = 443
     to_port     = 443
@@ -48,7 +42,15 @@ resource "aws_security_group" "mern_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Add ports for your MERN app (e.g., 3000 for client, 5000 for backend)
+  # SSH access from anywhere (consider restricting this in production)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Application ports open to anywhere
   ingress {
     from_port   = 3000
     to_port     = 3000
@@ -63,6 +65,7 @@ resource "aws_security_group" "mern_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
@@ -72,5 +75,5 @@ resource "aws_security_group" "mern_sg" {
 }
 
 output "instance_public_ip" {
-  value = aws_instance.mern_app_server.public_ip
+  value = aws_instance.app_server.public_ip
 }
